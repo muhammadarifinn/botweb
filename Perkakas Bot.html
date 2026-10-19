@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <title>Perkakas Bot</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="#beranda">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg></span>
+      Perkakas Bot
+    </a>
+    <nav class="nav" aria-label="Navigasi utama">
+      <a href="#beranda" data-nav="beranda">Beranda</a>
+      <a href="#bot-form" data-nav="bot-form">Bot Google Form</a>
+      <a href="#dataset" data-nav="dataset">Dataset Dummy</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ============ BERANDA ============ -->
+    <section id="view-beranda">
+      <div class="hero">
+        <h1>Bot kecil untuk pekerjaan yang berulang</h1>
+        <p>Kumpulan alat bantu yang bisa dipakai langsung di browser. Pilih satu, isi, dan salin hasilnya.</p>
+        <div class="meta">2 ALAT SIAP PAKAI &nbsp;·&nbsp; 2 SEGERA HADIR</div>
+      </div>
+      <div class="grid">
+        <a class="tool" href="#bot-form">
+          <span class="tag">Google Form</span>
+          <h2>Bot Google Form</h2>
+          <p>Baca struktur form apa pun, lihat pertanyaan dan opsinya, lalu buat data dummy yang sesuai dan siap dikirim.</p>
+          <span class="go">Buka alat →</span>
+        </a>
+        <a class="tool" href="#dataset">
+          <span class="tag">Dataset</span>
+          <h2>Dataset Dummy</h2>
+          <p>Susun kolom sendiri (nama, nomor HP, pilihan berbobot, angka, tanggal) dan dapatkan ratusan baris CSV.</p>
+          <span class="go">Buka alat →</span>
+        </a>
+        <div class="tool soon" aria-disabled="true">
+          <span class="tag">Segera hadir</span>
+          <h2>Pembuat Link Pre-filled</h2>
+          <p>Ubah satu baris data menjadi link Google Form yang sudah terisi.</p>
+          <span class="go">Dalam pengerjaan</span>
+        </div>
+        <div class="tool soon" aria-disabled="true">
+          <span class="tag">Segera hadir</span>
+          <h2>Pembersih CSV</h2>
+          <p>Rapikan nomor HP, hapus baris ganda, dan samakan format tanggal.</p>
+          <span class="go">Dalam pengerjaan</span>
+        </div>
+      </div>
+      <p class="foot">Semua pemrosesan terjadi di browser Anda. Tidak ada data yang dikirim ke server. Pakai hanya pada form dan data milik Anda sendiri.</p>
+    </section>
+
+    <!-- ============ BOT GOOGLE FORM ============ -->
+    <section id="view-bot-form" hidden>
+      <a class="back" href="#beranda">← Semua alat</a>
+      <h1 class="page-h">Bot Google Form</h1>
+      <p class="lead">Baca isi sebuah Google Form, lihat pertanyaannya, lalu buat data dummy yang cocok untuk tiap pertanyaan.</p>
+
+      <div class="note info">Halaman web tidak boleh mengirim data ke situs lain, jadi pengiriman ke Google Form dijalankan lewat skrip Python di komputer Anda. Di sini Anda membaca form, melihat data contoh, menyalin CSV, dan menyalin perintah untuk skripnya.</div>
+
+      <div class="panel">
+        <h2>1. Tempel kode sumber form</h2>
+        <ol class="steps">
+          <li>Buka form Anda di browser (form harus publik, tanpa wajib login).</li>
+          <li>Tekan <kbd>Ctrl</kbd>+<kbd>U</kbd> untuk membuka kode sumber halaman.</li>
+          <li>Tekan <kbd>Ctrl</kbd>+<kbd>A</kbd>, lalu <kbd>Ctrl</kbd>+<kbd>C</kbd>, dan tempel di bawah ini.</li>
+          <li>Download file python untuk menajlankan dummy nya <a href="https://example.com/dummy.py" target="_blank">di sini</a>.</li>
+        </ol>
+        <label for="src">Kode sumber halaman form</label>
+        <textarea id="src" rows="5" spellcheck="false" placeholder="Tempel seluruh kode sumber di sini…"></textarea>
+        <div class="row mt-10">
+          <button class="btn primary" id="btnRead" type="button">Baca form</button>
+        </div>
+        <p class="msg err" id="readErr" role="alert" hidden></p>
+      </div>
+
+      <div class="panel" id="formPanel">
+        <h2 id="formTitle"></h2>
+        <p class="hint" id="formMeta"></p>
+        <div class="note info" id="sampleNote" hidden>Ini contoh form tiruan. Tempel kode sumber form Anda di atas untuk menggantinya.</div>
+        <div id="formWarn"></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th class="num">No</th><th>Tipe</th><th>Wajib</th><th>Pertanyaan</th><th>Opsi</th></tr></thead>
+            <tbody id="qBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>2. Buat data dummy</h2>
+        <p class="hint">Isian teks ditebak dari judul pertanyaan (nama, nomor HP, email, alamat, jumlah). Pilihan diambil dari opsi yang ada di form.</p>
+        <div class="row">
+          <div class="field-sm"><label for="nBot">Jumlah baris</label><input id="nBot" type="number" min="1" max="2000" value="100"></div>
+          <button class="btn primary" id="btnGen" type="button">Buat data</button>
+        </div>
+        <details>
+          <summary>Atur jawaban sendiri (opsional)</summary>
+          <p class="hint mt-8">Satu objek JSON. Kuncinya sebagian kata dari judul pertanyaan. Format sama dengan <span class="meta">aturan.json</span> milik skrip Python.</p>
+          <textarea id="rulesBot" rows="5" spellcheck="false" placeholder='{
+  "can you attend": {"Yes, I&#39;ll be there": 80, "Sorry, can&#39;t make it": 20},
+  "how many": {"min": 1, "max": 4}
+}'></textarea>
+        </details>
+        <p class="msg err" id="genErr" role="alert" hidden></p>
+
+        <div id="outBot"></div>
+      </div>
+
+      <div class="panel">
+        <h2>3. Kirim ke form dari komputer Anda</h2>
+        <p class="hint">Jalankan perintah ini di terminal, di folder tempat <span class="meta">bot_form_universal.py</span> berada. Uji dulu dengan <span class="meta">-n 3</span>.</p>
+        <textarea id="cmdBox" class="out" rows="2" readonly spellcheck="false"></textarea>
+        <p class="msg" id="cmdHint" hidden></p>
+        <div class="row mt-10"><button class="btn" id="btnCmd" type="button">Salin perintah</button><span class="msg mt-0" id="cmdMsg"></span></div>
+      </div>
+    </section>
+
+    <!-- ============ DATASET DUMMY ============ -->
+    <section id="view-dataset" hidden>
+      <a class="back" href="#beranda">← Semua alat</a>
+      <h1 class="page-h">Dataset Dummy</h1>
+      <p class="lead">Susun kolom yang Anda butuhkan, tentukan jumlah baris, lalu salin hasilnya sebagai CSV. Tidak butuh form sama sekali.</p>
+
+      <div class="panel">
+        <h2>1. Susun kolom</h2>
+        <p class="hint">Contoh di bawah adalah data pesanan kaos. Ubah, hapus, atau tambah kolom sesuai kebutuhan.</p>
+        <div class="cols" id="colList"></div>
+        <div class="row">
+          <button class="btn small" id="btnAddCol" type="button">+ Tambah kolom</button>
+          <button class="btn small" id="btnPreset" type="button">Pakai contoh pesanan kaos</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>2. Buat dataset</h2>
+        <div class="row">
+          <div class="field-sm"><label for="nSet">Jumlah baris</label><input id="nSet" type="number" min="1" max="5000" value="100"></div>
+          <button class="btn primary" id="btnSet" type="button">Buat dataset</button>
+        </div>
+        <p class="msg err" id="setErr" role="alert" hidden></p>
+        <div id="outSet"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="app.js" defer></script>
+
+</body>
+</html>
